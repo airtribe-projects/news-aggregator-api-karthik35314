@@ -2,6 +2,7 @@ const tap = require('tap');
 const supertest = require('supertest');
 const app = require('../app');
 const server = supertest(app);
+const nock = require('nock')
 
 const mockUser = {
     name: 'Clark Kent',
@@ -81,12 +82,36 @@ tap.test('Check PUT /users/preferences', async (t) => {
 
 // News tests
 
+// tap.test('GET /news', async (t) => {
+//     const response = await server.get('/news').set('Authorization', `Bearer ${token}`);
+//     t.equal(response.status, 200);
+//     t.hasOwnProp(response.body, 'news');
+//     t.end();
+// });
+
 tap.test('GET /news', async (t) => {
+    // Mock NewsAPI response
+    nock('https://newsapi.org')
+      .get('/v2/top-headlines')
+      .query(true) // Accept any query parameters
+      .reply(200, {
+        articles: [
+          {
+            title: 'Mock News Title',
+            description: 'Mock description',
+            url: 'https://example.com/mock-news',
+            source: { name: 'Mock Source' },
+          },
+        ],
+      });
+  
     const response = await server.get('/news').set('Authorization', `Bearer ${token}`);
-    t.equal(response.status, 200);
-    t.hasOwnProp(response.body, 'news');
+  
+    t.equal(response.status, 200, 'Should return 200 OK');
+    t.hasOwnProp(response.body, 'news', 'Response should contain news property');
+    t.same(response.body.news.length, 1, 'Should return one mocked article');
     t.end();
-});
+  });
 
 tap.test('GET /news without token', async (t) => {
     const response = await server.get('/news');
