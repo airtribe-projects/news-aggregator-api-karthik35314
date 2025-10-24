@@ -1,0 +1,17 @@
+const express = require('express');
+const {
+  signup,
+  login,
+  getPreferences,
+  updatePreferences
+} = require('../controllers/userController');
+const auth = require('../middleware/auth');
+
+const router = express.Router();
+
+router.post('/signup', signup);
+router.post('/login', login);
+router.get('/preferences', auth, getPreferences);
+router.put('/preferences', auth, updatePreferences);
+
+module.exports = router;
