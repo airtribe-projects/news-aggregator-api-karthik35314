@@ -21,6 +21,7 @@
         "express": "^4.21.2",
         "jsonwebtoken": "^9.0.2",
         "mongoose": "^8.19.2",
+        "nock": "^14.0.10",
         "node-cache": "^5.1.2"
     },
     "engines": {
